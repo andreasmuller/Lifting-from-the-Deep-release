@@ -102,15 +102,15 @@ def process_image_folder( source_folder ):
 
         # Save 2D
         pose_2d_json_out_file = Path(output_folder / (file.stem + "_pose2d.json"))
-        write_data_as_json( pose_2d, pose_2d_json_out_file, pretty_print )
+        write_data_as_json( pose_2d.tolist(), pose_2d_json_out_file, pretty_print )
 
         # Save 3D
         pose_3d_json_out_file = Path(output_folder / (file.stem + "_pose3d.json"))
-        write_data_as_json( pose_3d, pose_3d_json_out_file, pretty_print )
+        write_data_as_json( pose_3d.tolist(), pose_3d_json_out_file, pretty_print )
 
         # Save Visibility
         visibility_json_out_file = Path(output_folder / (file.stem + "_visibility.json"))
-        write_data_as_json( visibility, visibility_json_out_file, pretty_print )
+        write_data_as_json( visibility.tolist(), visibility_json_out_file, pretty_print )
 
         # close model
         pose_estimator.close()
