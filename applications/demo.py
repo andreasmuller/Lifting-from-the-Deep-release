@@ -8,6 +8,12 @@ Created on Dec 20 17:39 2016
 
 import __init__
 
+
+import pathlib
+from pathlib import Path
+import sys
+import json
+
 from lifting import PoseEstimator
 from lifting.utils import draw_limbs
 from lifting.utils import plot_pose
@@ -23,29 +29,96 @@ SAVED_SESSIONS_DIR = PROJECT_PATH + '/data/saved_sessions'
 SESSION_PATH = SAVED_SESSIONS_DIR + '/init_session/init'
 PROB_MODEL_PATH = SAVED_SESSIONS_DIR + '/prob_model/prob_model_params.mat'
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+def get_files_of_type( source_folder, extensions ):
 
-def main():
-    image = cv2.imread(IMAGE_FILE_PATH)
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # conversion to rgb
+    valid_files = []
 
-    # create pose estimator
-    image_size = image.shape
+    for file in pathlib.Path(source_folder).glob('*.*'):
 
-    pose_estimator = PoseEstimator(image_size, SESSION_PATH, PROB_MODEL_PATH)
+        ext = file.suffix
+        if len(ext) > 1:
+            ext = ext[1:]
 
-    # load model
-    pose_estimator.initialise()
+        #print("ext " + ext )
+        #print(str(file))
+        if any(x in ext for x in extensions):
+            valid_files.append( file )
 
-    # estimation
-    pose_2d, visibility, pose_3d = pose_estimator.estimate(image)
+    return valid_files
 
-    # close model
-    pose_estimator.close()
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+def get_file_with_ext( file, ext ):
+    return Path(file.parent / (file.stem + "." + ext))
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+def write_data_as_json( dat, file, pretty_print=False ):
+
+    print_args = []
+    if pretty_print:
+        print_args = []
+
+    f = open(file, "w")
+    json_string = ""
+    if pretty_print:
+        json_string = json.dumps(dat, indent=4)
+    else:
+        json_string = json.dumps(dat)   
+            
+    print(json_string)
+    f.write( json_string )
+    f.close()
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+def process_image_folder( source_folder ):
+
+    print( "process_image_folder " + str(source_folder) )
+
+    source_folder = Path(source_folder)
+
+    image_extensions = ["png", "jpg", "tga", "bmp"]
+    images_to_process = get_files_of_type( source_folder, image_extensions )
+
+    output_folder = source_folder.parent / ( source_folder.stem + "_deep_out" )
+    output_folder.mkdir(parents=True, exist_ok=True)
+
+    for file in images_to_process:
+
+        image = cv2.imread(file)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # conversion to rgb
+
+        # create pose estimator
+        image_size = image.shape
+
+        pose_estimator = PoseEstimator(image_size, SESSION_PATH, PROB_MODEL_PATH)
+
+        # load model
+        pose_estimator.initialise()
+
+        # estimation
+        pose_2d, visibility, pose_3d = pose_estimator.estimate(image)
+
+        pretty_print = True
+
+        # Save 2D
+        pose_2d_json_out_file = Path(output_folder / (file.stem + "_pose2d.json"))
+        write_data_as_json( pose_2d, pose_2d_json_out_file, pretty_print )
+
+        # Save 3D
+        pose_3d_json_out_file = Path(output_folder / (file.stem + "_pose3d.json"))
+        write_data_as_json( pose_3d, pose_3d_json_out_file, pretty_print )
+
+        # Save Visibility
+        visibility_json_out_file = Path(output_folder / (file.stem + "_visibility.json"))
+        write_data_as_json( visibility, visibility_json_out_file, pretty_print )
+
+        # close model
+        pose_estimator.close()
 
     # Show 2D and 3D poses
-    display_results(image, pose_2d, visibility, pose_3d)
+    #display_results(image, pose_2d, visibility, pose_3d)
 
-
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 def display_results(in_image, data_2d, joint_visibility, data_3d):
     """Plot 2D and 3D poses for each of the people in the image."""
     plt.figure()
@@ -60,6 +133,12 @@ def display_results(in_image, data_2d, joint_visibility, data_3d):
 
     plt.show()
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 if __name__ == '__main__':
-    import sys
-    sys.exit(main())
+
+    print( 'Number of arguments: ' + str(len(sys.argv)) + ' arguments.')
+    print( 'Argument List: ' + str(sys.argv) )
+
+    source_folder = sys.argv[1]
+
+    sys.exit( process_image_folder(source_folder) )
