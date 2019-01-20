@@ -84,7 +84,7 @@ def process_image_folder( source_folder ):
 
     for file in images_to_process:
 
-        image = cv2.imread(file)
+        image = cv2.imread(str(file)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # conversion to rgb
 
         # create pose estimator
