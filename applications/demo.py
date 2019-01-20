@@ -65,9 +65,11 @@ def write_data_as_json( dat, file, pretty_print=False ):
     else:
         json_string = json.dumps(dat)   
             
-    print(json_string)
+    #print(json_string)
+
     f.write( json_string )
     f.close()
+
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 def process_image_folder( source_folder ):
@@ -103,14 +105,17 @@ def process_image_folder( source_folder ):
         # Save 2D
         pose_2d_json_out_file = Path(output_folder / (file.stem + "_pose2d.json"))
         write_data_as_json( pose_2d.tolist(), pose_2d_json_out_file, pretty_print )
+        print("Wrote " + str(pose_2d_json_out_file))
 
         # Save 3D
         pose_3d_json_out_file = Path(output_folder / (file.stem + "_pose3d.json"))
         write_data_as_json( pose_3d.tolist(), pose_3d_json_out_file, pretty_print )
+        print("Wrote " + str(pose_3d_json_out_file))        
 
         # Save Visibility
         visibility_json_out_file = Path(output_folder / (file.stem + "_visibility.json"))
         write_data_as_json( visibility.tolist(), visibility_json_out_file, pretty_print )
+        print("Wrote " + str(visibility_json_out_file))        
 
         # close model
         pose_estimator.close()
