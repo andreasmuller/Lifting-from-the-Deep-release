@@ -84,6 +84,7 @@ def process_image_folder( source_folder ):
     output_folder = source_folder.parent / ( source_folder.stem + "_deep_out" )
     output_folder.mkdir(parents=True, exist_ok=True)
 
+    currFileIndex = 1
     for file in images_to_process:
 
         image = cv2.imread(str(file))
@@ -106,24 +107,31 @@ def process_image_folder( source_folder ):
         if len(pose_2d) > 0:
             pose_2d_json_out_file = Path(output_folder / (file.stem + "_pose2d.json"))
             write_data_as_json( pose_2d.tolist(), pose_2d_json_out_file, pretty_print )
-            print("Wrote " + str(pose_2d_json_out_file))
+            #print("Wrote " + str(pose_2d_json_out_file))
+       else:
+            print( "Empty pose_2d data" )
 
         # Save 3D
         if len(pose_3d) > 0:
             pose_3d_json_out_file = Path(output_folder / (file.stem + "_pose3d.json"))
             write_data_as_json( pose_3d.tolist(), pose_3d_json_out_file, pretty_print )
-            print("Wrote " + str(pose_3d_json_out_file))        
+            #print("Wrote " + str(pose_3d_json_out_file))        
+        else:
+            print("Empty pose_3d data")
 
         # Save Visibility
         if len(visibility) > 0:
             visibility_json_out_file = Path(output_folder / (file.stem + "_visibility.json"))
             write_data_as_json( visibility.tolist(), visibility_json_out_file, pretty_print )
-            print("Wrote " + str(visibility_json_out_file))        
+            #print("Wrote " + str(visibility_json_out_file))        
+        else:
+            print("Empty visibility data")
 
         # close model
         pose_estimator.close()
 
-        print("Processed " + str(file) )
+        currFileIndex = currFileIndex + 1
+        print("Processed " + str(file) + "  " + str(currFileIndex) + "/" + str(len(images_to_process)) )
 
     # Show 2D and 3D poses
     #display_results(image, pose_2d, visibility, pose_3d)

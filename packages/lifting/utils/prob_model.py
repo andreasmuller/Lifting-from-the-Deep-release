@@ -102,7 +102,7 @@ class Prob3dPose:
     def normalise_data(d2, weights):
         """Normalise data according to height"""
 
-        print("d2 " + str(d2))
+        #print("d2 " + str(d2))
 
         # the joints with weight set to 0 should not be considered in the
         # normalisation process
