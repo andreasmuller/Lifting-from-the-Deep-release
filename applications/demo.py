@@ -108,7 +108,7 @@ def process_image_folder( source_folder ):
             pose_2d_json_out_file = Path(output_folder / (file.stem + "_pose2d.json"))
             write_data_as_json( pose_2d.tolist(), pose_2d_json_out_file, pretty_print )
             #print("Wrote " + str(pose_2d_json_out_file))
-       else:
+        else:
             print( "Empty pose_2d data" )
 
         # Save 3D
