@@ -248,8 +248,6 @@ class Prob3dPose:
         _J_POS = [1, 2, 3, 4, 5, 6, 8, 10, 11, 12, 13, 14, 15, 16]
         _SCALE_3D = 1174.88312988
 
-        print("Shape " + str(pose_2d.shape))
-
         pose_3d = []
 
         if pose_2d.shape[0] > 0:
