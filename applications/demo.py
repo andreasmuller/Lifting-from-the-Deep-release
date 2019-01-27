@@ -103,22 +103,27 @@ def process_image_folder( source_folder ):
         pretty_print = True
 
         # Save 2D
-        pose_2d_json_out_file = Path(output_folder / (file.stem + "_pose2d.json"))
-        write_data_as_json( pose_2d.tolist(), pose_2d_json_out_file, pretty_print )
-        print("Wrote " + str(pose_2d_json_out_file))
+        if len(pose_2d) > 0:
+            pose_2d_json_out_file = Path(output_folder / (file.stem + "_pose2d.json"))
+            write_data_as_json( pose_2d.tolist(), pose_2d_json_out_file, pretty_print )
+            print("Wrote " + str(pose_2d_json_out_file))
 
         # Save 3D
-        pose_3d_json_out_file = Path(output_folder / (file.stem + "_pose3d.json"))
-        write_data_as_json( pose_3d.tolist(), pose_3d_json_out_file, pretty_print )
-        print("Wrote " + str(pose_3d_json_out_file))        
+        if len(pose_3d) > 0:
+            pose_3d_json_out_file = Path(output_folder / (file.stem + "_pose3d.json"))
+            write_data_as_json( pose_3d.tolist(), pose_3d_json_out_file, pretty_print )
+            print("Wrote " + str(pose_3d_json_out_file))        
 
         # Save Visibility
-        visibility_json_out_file = Path(output_folder / (file.stem + "_visibility.json"))
-        write_data_as_json( visibility.tolist(), visibility_json_out_file, pretty_print )
-        print("Wrote " + str(visibility_json_out_file))        
+        if len(visibility) > 0:
+            visibility_json_out_file = Path(output_folder / (file.stem + "_visibility.json"))
+            write_data_as_json( visibility.tolist(), visibility_json_out_file, pretty_print )
+            print("Wrote " + str(visibility_json_out_file))        
 
         # close model
         pose_estimator.close()
+
+        print("Processed " + str(file) )
 
     # Show 2D and 3D poses
     #display_results(image, pose_2d, visibility, pose_3d)
